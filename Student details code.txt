@@ -1,0 +1,86 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Student {
+    private int id;
+    private String name;
+    private int totalMarks;
+
+    public Student(int id, String name, int totalMarks) {
+        this.id = id;
+        this.name = name;
+        this.totalMarks = totalMarks;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+}
+
+class GridSystem {
+    private List<Student> students;
+
+    public GridSystem() {
+        students = new ArrayList<>();
+        students.add(new Student(1, "John Doe", 85));
+        students.add(new Student(2, "Jane Smith", 92));
+        students.add(new Student(3, "David Johnson", 76));
+        students.add(new Student(4, "Emily Brown", 88));
+    }
+
+    public List<Student> getStudents(int page, int pageSize, String sortBy, 
+	String filterBy, int filterValue) {
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, students.size());
+
+        students.sort((s1, s2) -> {
+            if (sortBy.equals("id")) {
+                return Integer.compare(s1.getId(), s2.getId());
+            } else if (sortBy.equals("name")) {
+                return s1.getName().compareTo(s2.getName());
+            } else if (sortBy.equals("totalMarks")) {
+                return Integer.compare(s1.getTotalMarks(), s2.getTotalMarks());
+            } else {
+                return 0;
+            }
+        });
+
+       
+        List<Student> filteredStudents = new ArrayList<>();
+        for (int i = startIndex; i < endIndex; i++) {
+            Student student = students.get(i);
+            if (filterBy.equals("id") && student.getId() == filterValue) {
+                filteredStudents.add(student);
+            } else if (filterBy.equals("name") && student.getName().contains(filterValue + "")) {
+                filteredStudents.add(student);
+            } else if (filterBy.equals("totalMarks") && student.getTotalMarks() == filterValue) {
+                filteredStudents.add(student);
+            }
+        }
+
+        return filteredStudents;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        GridSystem gridSystem = new GridSystem();
+
+        List<Student> students = gridSystem.getStudents(1, 2, "totalMarks", "totalMarks", 85);
+
+        for (Student student : students) {
+            System.out.println("ID: " + student.getId());
+            System.out.println("Name: " + student.getName());
+            System.out.println("Total Marks: " + student.getTotalMarks());
+            System.out.println();
+        }
+    }
+}
